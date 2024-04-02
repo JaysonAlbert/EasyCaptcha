@@ -1,0 +1,10 @@
+./datasets/images/0.png	 5+1=?
+./datasets/images/1.png	 2x3=?
+./datasets/images/2.png	 2-3=?
+./datasets/images/3.png	 9x0=?
+./datasets/images/4.png	 0x4=?
+./datasets/images/5.png	 9+5=?
+./datasets/images/6.png	 9x0=?
+./datasets/images/7.png	 4-8=?
+./datasets/images/8.png	 2+5=?
+./datasets/images/9.png	 2+7=?
