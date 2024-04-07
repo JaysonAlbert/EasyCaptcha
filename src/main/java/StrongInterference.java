@@ -1,31 +1,90 @@
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.awt.*;
-import java.io.IOException;
-import java.io.OutputStream;
 
 import com.wf.captcha.ArithmeticCaptcha;
-import com.wf.captcha.base.Captcha;
 
 class StrongInterference extends ArithmeticCaptcha {
 
+    static Map<Character, String> numberMap = new HashMap<>();
+    static {
+        numberMap.put('0', "零");
+        numberMap.put('1', "壹");
+        numberMap.put('2', "贰");
+        numberMap.put('3', "叁");
+        numberMap.put('4', "肆");
+        numberMap.put('5', "伍");
+        numberMap.put('6', "陆");
+        numberMap.put('7', "柒");
+        numberMap.put('8', "捌");
+        numberMap.put('9', "玖");
+    }
+
+
+    // 定义运算符和中文的对应关系
+    static Map<Character, String> operatorMap = new HashMap<>();
+    static {
+        operatorMap.put('+', "加");
+        operatorMap.put('-', "减");
+        operatorMap.put('x', "乘");
+        operatorMap.put('/', "除");
+    }
+
+        private Boolean useChinese;
+
     Random rand = new Random();
+
+    public void setUseChinese(Boolean useChinese){
+        this.useChinese = useChinese;
+    }
+
+    @Override
+    protected char[] alphas(){
+        char[] res = super.alphas();
+        if(useChinese){
+            setArithmeticString(convertToChinese(getArithmeticString()));
+        }
+        return res;
+    }
+
+    private static String convertToChinese(String arithmeticExpression) {
+        arithmeticExpression = arithmeticExpression.replace("=?", "");
+        // 转换算术表达式为中文表述
+        StringBuilder chineseExpression = new StringBuilder();
+        for (char ch : arithmeticExpression.toCharArray()) {
+            if (numberMap.containsKey(ch)) {
+                chineseExpression.append(numberMap.get(ch));
+            } else if (operatorMap.containsKey(ch)) {
+                chineseExpression.append(operatorMap.get(ch));
+            } else {
+                chineseExpression.append(ch);
+            }
+        }
+        return chineseExpression.toString();
+    }
+
+
 
     public StrongInterference(int width, int height) {
         super(width, height);
+        this.useChinese = Boolean.FALSE;
     }
 
     public StrongInterference(int width, int height, int len) {
         this(width, height);
+        this.useChinese = Boolean.FALSE;
         setLen(len);
     }
 
     public StrongInterference(int width, int height, int len, Font font) {
         this(width, height, len);
+        this.useChinese = Boolean.FALSE;
         setFont(font);
     }
 
@@ -68,11 +127,13 @@ class StrongInterference extends ArithmeticCaptcha {
             drawBesselLine(4, g2d);
             // 画字符串
             try {
-                setFont(rand.nextInt(10), rand.nextInt(10) + 70);
+                if(!this.useChinese){
+                    setFont(rand.nextInt(10), rand.nextInt(10) + 70);
+                    g2d.setFont(getFont());
+                }
             } catch (Exception e) {
             }
 
-            g2d.setFont(getFont());
 
             FontMetrics fontMetrics = g2d.getFontMetrics();
             int fW = width / strs.length; // 每一个字符所占的宽度

@@ -9,7 +9,7 @@
 	<name>easycaptcha</name>
 	<description>Demo project for Spring Boot</description>
 	<properties>
-		<java.version>11</java.version>
+		<java.version>8</java.version>
 	</properties>
 	<dependencies>
 		
@@ -30,9 +30,9 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.7.0</version>
 				<configuration>
-					<source>11</source> 
-					<target>11</target> 
-					<release>11</release> 
+					<source>8</source>
+					<target>8</target>
+					<release>8</release>
 				</configuration>
 			</plugin>
 
