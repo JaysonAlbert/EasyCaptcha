@@ -156,8 +156,6 @@ class StrongInterference extends ArithmeticCaptcha {
                     g2d.setFont(getFont());
                 } else {
                     String fontName = getRandomFontName();
-                    System.out.println("Randomly selected font name: " + fontName);
-
                     g2d.setFont(new Font(fontName, Font.BOLD, 45));
                 }
 
