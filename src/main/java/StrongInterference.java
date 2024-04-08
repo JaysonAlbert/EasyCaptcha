@@ -1,12 +1,15 @@
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.awt.*;
+import java.awt.Font;
 
 import com.wf.captcha.ArithmeticCaptcha;
 
@@ -26,7 +29,6 @@ class StrongInterference extends ArithmeticCaptcha {
         numberMap.put('9', "玖");
     }
 
-
     // 定义运算符和中文的对应关系
     static Map<Character, String> operatorMap = new HashMap<>();
     static {
@@ -36,18 +38,42 @@ class StrongInterference extends ArithmeticCaptcha {
         operatorMap.put('/', "除");
     }
 
-        private Boolean useChinese;
+    static List<String> CHINESE_FONT_NAMES = new ArrayList<>();
+    static {
+        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        String[] fontNames = ge.getAvailableFontFamilyNames();
+        for (String fontName : fontNames) {
+            Font font = new Font(fontName, Font.PLAIN, 12);
+            // 检查字体是否支持显示"汉"或"文"，这两个字符足以测试中文支持
+            if (font.canDisplayUpTo("零") == -1) {
+                CHINESE_FONT_NAMES.add(fontName);
+            }
+        }
+        System.out.println("当前系统可用的字体有：" + CHINESE_FONT_NAMES);
+    }
+
+    private Boolean useChinese;
 
     Random rand = new Random();
 
-    public void setUseChinese(Boolean useChinese){
+    public void setUseChinese(Boolean useChinese) {
         this.useChinese = useChinese;
     }
 
+    public String text() {
+        return getArithmeticString();
+    }
+
+    public static String getRandomFontName() {
+        Random random = new Random();
+        int randomIndex = random.nextInt(CHINESE_FONT_NAMES.size()); // 随机选择一个索引
+        return CHINESE_FONT_NAMES.get(randomIndex); // 返回随机选中的字体名称
+    }
+
     @Override
-    protected char[] alphas(){
+    protected char[] alphas() {
         char[] res = super.alphas();
-        if(useChinese){
+        if (useChinese) {
             setArithmeticString(convertToChinese(getArithmeticString()));
         }
         return res;
@@ -68,8 +94,6 @@ class StrongInterference extends ArithmeticCaptcha {
         }
         return chineseExpression.toString();
     }
-
-
 
     public StrongInterference(int width, int height) {
         super(width, height);
@@ -127,13 +151,18 @@ class StrongInterference extends ArithmeticCaptcha {
             drawBesselLine(4, g2d);
             // 画字符串
             try {
-                if(!this.useChinese){
+                if (!this.useChinese) {
                     setFont(rand.nextInt(10), rand.nextInt(10) + 70);
                     g2d.setFont(getFont());
+                } else {
+                    String fontName = getRandomFontName();
+                    System.out.println("Randomly selected font name: " + fontName);
+
+                    g2d.setFont(new Font(fontName, Font.BOLD, 45));
                 }
+
             } catch (Exception e) {
             }
-
 
             FontMetrics fontMetrics = g2d.getFontMetrics();
             int fW = width / strs.length; // 每一个字符所占的宽度
